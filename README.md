@@ -29,8 +29,8 @@
   - Fraud scores
 
 - **User-Friendly Features**
-  - Interactive CLI with `questionary`
-  - Beautiful console output with `rich`
+  - Interactive CLI with questionary
+  - Beautiful console output with rich
   - Progress bars and real-time status updates
   - Windows Registry configuration persistence
   - Local caching for offline performance
@@ -59,13 +59,159 @@
 
 ### Method 2: From Source
 
-```bash
-# Clone the repository
-git clone https://github.com/dfirvault/LogEnricher.git
-cd LogEnricher
+`#` Clone the repository
+`git clone https://github.com/dfirvault/LogEnricher.git`
+`cd LogEnricher`
 
-# Install required packages
-pip install -r requirements.txt
+`#` Run the tool
+`python LogEnricher.py`
 
-# Run the tool
-python LogEnricher.py
+### Requirements.txt
+
+`questionary&gt;=2.0.0`
+`rich&gt;=13.0.0`
+`requests&gt;=2.31.0`
+
+## 💻 Usage
+
+### Quick Start
+
+`python LogEnricher.py`
+
+The tool will guide you through:
+1. API key configuration
+2. Enrichment service selection
+3. File/folder selection
+4. Output directory selection
+
+### Input Format
+
+Any CSV file containing logs, events, or text data. The tool automatically:
+- Detects CSV dialect and encoding
+- Extracts IOCs from all columns
+- Preserves original data while adding enrichment columns
+
+### Output Format
+
+Original columns + enrichment columns (prefixed by source):
+- `geo_*` - Geolocation data (IP2Location)
+- `proxy_*` - Proxy/VPN detection
+- `abuse_*` - AbuseIPDB reputation
+- `otx_*` - OTX threat intelligence
+- `combined_threat_score` - Aggregated threat score (0-100)
+
+### Example Output Columns
+
+| Original | Enriched |
+|----------|----------|
+| timestamp | geo_country_code |
+| src_ip | geo_country_name |
+| dst_ip | proxy_type |
+| user_agent | abuse_confidence_score |
+| url | otx_pulse_count |
+| ... | combined_threat_score |
+
+## 🎯 Use Cases
+
+### Security Operations (SOC)
+- Enrich firewall logs with threat intelligence
+- Identify malicious IPs in real-time
+- Prioritize incident response based on threat scores
+
+### Threat Hunting
+- Extract IOCs from historical logs
+- Identify previously missed indicators
+- Build threat intelligence datasets
+
+### Forensic Analysis
+- Enrich PCAP/NetFlow logs
+- Geolocate suspicious connections
+- Detect proxy/VPN usage
+
+### Compliance Reporting
+- Generate enriched evidence files
+- Create audit-ready reports
+- Demonstrate threat detection capabilities
+
+## 🔒 Windows Registry Configuration
+
+The tool saves API keys and preferences to:
+`HKEY_CURRENT_USER\Software\DFIRVault\LogEnricher`
+
+Saved settings include:
+- API keys (encrypted in registry)
+- Last used input/output paths
+- Enabled enrichment services
+
+## 📁 Cache System
+
+Local caching improves performance and reduces API calls:
+
+`%USERPROFILE%\.log_enricher_cache\`
+`├── ip2location_px12_db.pkl`      `#` IP2Location database (30-day cache)
+`├── tor_exit_nodes.pkl`            `#` TOR exit nodes (24-hour cache)
+`└── ip2location_px12_metadata.json`
+
+## 📊 Performance Considerations
+
+- **First run**: Downloads IP2Location database (~50MB)
+- **Subsequent runs**: Uses cached database
+- **API rate limiting**: Built-in delays prevent throttling
+- **Memory usage**: ~200-300MB for IP database
+- **Processing speed**: ~1000 rows/second (excluding API calls)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Q: "No module named 'questionary'"**
+`pip install questionary rich requests`
+
+**Q: IP2Location download fails**
+- Verify your token at IP2Location.com
+- Check internet connectivity
+- Ensure firewall allows downloads
+
+**Q: Windows registry access denied**
+- Run as administrator
+- Tool will continue without registry saving
+
+**Q: Large CSV files are slow**
+- Reduce enrichment services
+- Use smaller batch sizes
+- Consider splitting large files
+
+## 🤝 Contributing
+
+Contributions welcome! Areas for improvement:
+
+- [ ] IPv6 support
+- [ ] Additional threat feeds (VirusTotal, URLhaus)
+- [ ] Parallel processing for large files
+- [ ] GUI interface
+- [ ] Export to JSON/Parquet formats
+- [ ] Real-time enrichment mode
+- [ ] Docker container support
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/dfirvault/LogEnricher)
+- [Issue Tracker](https://github.com/dfirvault/LogEnricher/issues)
+- [DFIRVault Blog](https://dfirvault.com)
+
+## 🙏 Acknowledgments
+
+- AlienVault for OTX threat intelligence
+- IP2Location for proxy detection database
+- AbuseIPDB for reputation data
+- Tor Project for exit node lists
+
+## 📧 Contact
+
+- **Author**: DFIRVault
+- **Email**: contact@dfirvault.com
+- **Twitter**: [@DFIRVault](https://twitter.com/DFIRVault)
